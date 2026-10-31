@@ -1,0 +1,26 @@
+[
+  {
+    "id": "demo-note-cse-os-001",
+    "branch": "CSE",
+    "subject": "Operating Systems",
+    "topic": "CPU Scheduling",
+    "title": "CPU Scheduling — quick revision",
+    "content": "CPU SCHEDULING — QUICK REVISION\n\nGoal: choose a ready process for CPU execution. Common criteria include CPU utilization, throughput, turnaround time, waiting time and response time.\n\nFCFS: non-preemptive; simple; may suffer from the convoy effect.\n\nSJF: selects the process with the shortest next CPU burst. It minimizes average waiting time under ideal assumptions, but long jobs may starve.\n\nRound Robin: preemptive; each process receives a time quantum. A very large quantum approaches FCFS; a very small quantum increases context-switch overhead.\n\nPriority scheduling: highest-priority process runs first; aging can reduce starvation.\n\nExam checklist: distinguish waiting time from turnaround time; draw the Gantt chart; calculate completion, turnaround, waiting and response times carefully."
+  },
+  {
+    "id": "demo-note-cse-dbms-001",
+    "branch": "CSE",
+    "subject": "DBMS",
+    "topic": "Keys",
+    "title": "Relational keys — quick revision",
+    "content": "RELATIONAL KEYS — QUICK REVISION\n\nSuperkey: any set of attributes that uniquely identifies a tuple.\n\nCandidate key: a minimal superkey; removing any attribute means it no longer uniquely identifies tuples.\n\nPrimary key: the candidate key selected as the main identifier.\n\nAlternate keys: candidate keys not chosen as the primary key.\n\nForeign key: attribute(s) whose values refer to a candidate/primary key in another or the same relation, subject to the schema's constraints.\n\nExam checklist: uniqueness alone is not enough for a candidate key; minimality is also required."
+  },
+  {
+    "id": "demo-note-da-prob-001",
+    "branch": "DA",
+    "subject": "Probability and Statistics",
+    "topic": "Probability",
+    "title": "Basic probability — quick revision",
+    "content": "BASIC PROBABILITY — QUICK REVISION\n\nFor a finite sample space with equally likely outcomes, P(A) = number of outcomes in A divided by total outcomes.\n\nComplement: P(Aᶜ) = 1 − P(A).\n\nAddition rule: P(A ∪ B) = P(A) + P(B) − P(A ∩ B).\n\nIf A and B are mutually exclusive, P(A ∩ B) = 0. If independent, P(A ∩ B) = P(A)P(B). These are different conditions.\n\nConditional probability: P(A|B) = P(A ∩ B)/P(B), when P(B) > 0.\n\nExam checklist: do not confuse mutually exclusive events with independent events."
+  }
+]
