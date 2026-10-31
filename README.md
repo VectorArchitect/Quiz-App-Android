@@ -142,6 +142,10 @@ app/
 
 The repository also contains Gradle wrapper and configuration files required to build the project.
 
+## Acknowledgements
+
+The question database used as a source for this project is credited to [@sanny1724](https://github.com/sanny1724), from the [GATE--PYQS-LAST-10-YEARS repository](https://github.com/sanny1724/GATE--PYQS-LAST-10-YEARS). See [CREDITS.md](CREDITS.md) for source details and attribution.
+
 ## Contributing
 
 Suggestions, bug reports and feature requests are welcome.
