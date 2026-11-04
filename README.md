@@ -1,57 +1,65 @@
 # Quiz App for Android
 
-An offline-first native Android application built with Java and Android Studio for practising GATE CSE and Data Science & Artificial Intelligence (DA) questions.
+An offline-first native Android application built with Java and Android Studio for practising GATE Computer Science (CSE) and Data Science & Artificial Intelligence (DA) questions.
 
-> **Project Status:** This repository currently contains a functional prototype. The bundled question bank and revision notes are demonstration content and should not be considered verified GATE Previous Year Questions (PYQs) unless independently checked against the original papers and answer keys.
+> **Project status:** Functional prototype. The bundled question banks and revision notes are not a substitute for checking every question, diagram, option and answer against the original examination papers and official answer keys.
 
 ## Features
 
-- Offline quiz practice using bundled question data.
-- Support for MCQ, MSQ and NAT question formats.
-- CSE and DA branch classification.
-- Subject- and topic-based question organisation.
-- Quiz review and explanations at the end of a quiz, where provided.
-- Question source information, including year and source reference where available.
+- Offline quiz practice using question banks bundled in the APK.
+- MCQ, MSQ and NAT question formats.
+- CSE and DA branch selection, with subject-wise and mixed practice.
+- Randomized question selection and navigation between questions.
+- End-of-session review showing attempted answers and correct answers.
+- Source metadata such as year, paper/session, question number and source paper where available.
 - Offline revision notes.
-- PDF selection and import into the app's private storage.
+- Multiple-PDF selection and import into the app's private storage.
 
 ## Requirements
 
 - Android Studio
-- JDK 17 or a compatible JDK supported by the project's Gradle configuration.
-- Android device or emulator.
+- JDK 17 or a compatible JDK supported by the configured Gradle version.
+- Android device or emulator
 
-## Getting Started
+## Getting started
 
 1. Clone or download this repository.
-2. Open the project root folder in Android Studio.
-3. Allow Gradle sync to complete.
+2. Open the repository root in Android Studio.
+3. Allow Gradle sync to finish.
 4. Connect an Android device or start an emulator.
 5. Run the `app` configuration.
 
-If Android Studio requests a JDK, use JDK 17, subject to the Gradle and Android Gradle Plugin versions configured in the project.
+If Android Studio asks for a JDK, use JDK 17, subject to the Gradle and Android Gradle Plugin versions configured in the project.
 
-## Offline Question Bank
+## Offline question banks
 
-Question data is bundled in the app's assets directory:
+Question banks are stored in `app/src/main/assets/`. The current files are:
 
-```text
-app/src/main/assets/questions.json
-```
+| File | Branch | Records |
+| --- | --- | ---: |
+| `GATE_CSE_questions_classified.json` | CSE | 520 |
+| `GATE_DA_questions_2024_2026.json` | DA | 195 |
+| **Total** | | **715** |
 
-Quiz-taking does not require a network connection or backend service.
+Counts reflect the data currently committed and may change as the banks are reviewed and expanded.
 
-### Question Data Format
+### How the app loads question data
 
-The documented question fields include:
+`MainActivity.loadQuestions()` scans the top level of the assets directory. It reads JSON arrays other than `theory_notes.json`, and imports only array entries that contain a `question` field. Entries with an `id` are de-duplicated by that ID.
 
-- `branch`: `CSE` or `DA`
-- `subject` and `topic`
-- `type`: `MCQ`, `MSQ` or `NAT`
-- `question`
-- For MCQ/MSQ: `options`, matching `optionValues`, and `answers`
-- For NAT: `numericAnswer` and optional `tolerance`
-- `explanation`, `year` and `source`
+This means you can add another question-bank JSON array at the assets root without changing the Java loader. Keep non-question metadata in a separate file; records without a `question` field are ignored. The existing `questions.json` file is an empty placeholder, not the active source of the bundled questions.
+
+### Supported question fields
+
+Common fields include:
+
+- `id`: stable unique question identifier (recommended).
+- `branch`: `CSE` or `DA`.
+- `subject`, `topic`, `type` and `question`.
+- `year`, `paperSession`, `questionNumber`, `officialSection` and `marks`.
+- `explanation`, `sourceQuestionPaper`, `sourceAnswerKey` and `imagePath`, where available.
+
+For MCQ/MSQ questions, `options` may be an array of objects with `value` and `text` fields. The loader also supports string options paired with an `optionValues` array. `answers` contains the correct option values; for MSQ it must contain every correct option.
 
 Example MCQ:
 
@@ -59,37 +67,48 @@ Example MCQ:
 {
   "id": "cse-2024-session1-q01",
   "branch": "CSE",
+  "year": "2024",
+  "paperSession": "Session 1",
+  "questionNumber": 1,
   "subject": "Operating Systems",
   "topic": "Scheduling",
   "type": "MCQ",
   "question": "Question text...",
   "options": [
-    "Option one",
-    "Option two",
-    "Option three",
-    "Option four"
+    { "value": "A", "text": "Option one" },
+    { "value": "B", "text": "Option two" },
+    { "value": "C", "text": "Option three" },
+    { "value": "D", "text": "Option four" }
   ],
-  "optionValues": ["A", "B", "C", "D"],
   "answers": ["B"],
-  "explanation": "Verified explanation...",
-  "year": "2024",
-  "source": "GATE CSE 2024, session 1, Q1"
+  "explanation": "Explanation text..."
 }
 ```
 
-For MSQ, `answers` should contain every correct option value. For NAT, use `numericAnswer` and, where appropriate, `tolerance` instead of MCQ/MSQ option and answer fields.
+For NAT questions, provide `numericAnswer` and an optional `tolerance`, or an `acceptedRange` object with `min` and `max`. The loader also understands the existing `answerKeyRange` field used in the bundled data.
 
-Do not paste raw PDF text directly into Java source files. Convert questions into the supported data structure and verify question text, diagrams, options, answer keys and marks against the original paper before adding them.
+Example NAT:
 
-## Revision Notes
-
-The home screen provides a **Browse revision notes** option. Notes are loaded from:
-
-```text
-app/src/main/assets/theory_notes.json
+```json
+{
+  "id": "cse-2024-session1-q31",
+  "branch": "CSE",
+  "type": "NAT",
+  "question": "Enter the numerical answer...",
+  "numericAnswer": 12.5,
+  "tolerance": 0.01
+}
 ```
 
-Each note object uses these fields:
+Verify question wording, mathematical notation, diagrams, option boundaries, marks and answer keys against the original paper before publishing changes. Do not paste raw PDF text directly into Java source files.
+
+### General Aptitude and question order
+
+The bank preserves paper metadata and uses `officialSection`/subject classification where available. In a standard GATE paper, the first 10 questions are General Aptitude, but the app shuffles the selected questions when a practice session starts; it does not currently reproduce a full paper in its original order.
+
+## Revision notes
+
+The **Browse revision notes** screen reads `app/src/main/assets/theory_notes.json`. Each note uses:
 
 - `id`
 - `branch` (`CSE` or `DA`)
@@ -98,33 +117,25 @@ Each note object uses these fields:
 - `title`
 - `content`
 
-The included notes are demonstration content. Check their accuracy and source rights before replacing or expanding them.
+The notes currently included are demonstration material. Check their accuracy and source rights before replacing or expanding them.
 
-## PDF Import
+## PDF import
 
-The home screen includes an **Import PDFs** option. It opens Android's file picker, allows multiple PDF files to be selected, and copies the selected files into the app-private `files/pdf_inbox/` directory.
+The **Import PDFs** action opens Android's document picker, supports multiple selections, and copies the selected files into the app-private `files/pdf_inbox/` directory.
 
-This is an intake and storage feature only. It does **not** automatically extract questions from PDFs or convert them into the question bank.
+This is an intake and storage feature only. It does **not** extract text, perform OCR, or convert PDF content into quiz questions. Imported questions must be checked and added to a question-bank JSON file in the assets directory.
 
-Questions must still be verified and added to `questions.json`. Refer to `IMPORT_WORKFLOW.md` for the project's import workflow, if included in the repository.
+## Current prototype limitations
 
-## General Aptitude
+- Question-bank content and revision notes still require independent academic and answer-key verification.
+- Quiz history and bookmarks are not persisted between sessions.
+- Responses are retained in memory for the current quiz and shown in the end-of-session review for attempted questions; unanswered questions are omitted from that review.
+- Results are calculated when the results screen is displayed; no long-term score history is stored.
+- Subject options are derived from the questions currently loaded for the selected branch.
+- PDF extraction, OCR and automatic question conversion are not implemented.
+- The quiz workflow is offline and does not require a backend or network connection.
 
-For a complete GATE paper in its original question order, the first **10 questions** are classified as General Aptitude, after confirming that the source PDF contains the complete paper and that its original order has been preserved.
-
-## Current Prototype Limitations
-
-- The bundled question bank and revision notes are demonstration content, not automatically verified PYQs.
-- Quiz history and bookmarks are not persisted.
-- The current prototype scores a question when the user advances. The end-of-quiz review does not yet retain each user's submitted response.
-- Subject options are derived from the questions currently present in the bundled JSON data.
-- PDF import only stages files in app-private storage. PDF extraction, OCR and conversion into individual questions are not implemented by this feature.
-- Answer-key validation and verification of diagrams, options and marks must be performed before publishing question content.
-- The documented offline quiz workflow does not require an internet connection or online service.
-
-## Project Structure
-
-Key files include:
+## Project structure
 
 ```text
 app/
@@ -132,15 +143,18 @@ app/
     └── main/
         ├── AndroidManifest.xml
         ├── assets/
-        │   ├── questions.json
-        │   └── theory_notes.json
+        │   ├── GATE_CSE_questions_classified.json
+        │   ├── GATE_DA_questions_2024_2026.json
+        │   ├── image_manifest_CS.json
+        │   ├── theory_notes.json
+        │   └── images_CS/ and images_DA/
         ├── java/
         │   └── com/example/gatequiz/
         │       └── MainActivity.java
         └── res/
 ```
 
-The repository also contains Gradle wrapper and configuration files required to build the project.
+The repository also includes the Gradle wrapper and project configuration needed to build the Android app.
 
 ## Acknowledgements
 
@@ -148,9 +162,7 @@ The question database used as a source for this project is credited to [@sanny17
 
 ## Contributing
 
-Suggestions, bug reports and feature requests are welcome.
-
-Please open a GitHub Issue with steps to reproduce a bug or a clear description of the proposed improvement.
+Bug reports, suggestions and feature requests are welcome through GitHub Issues. Include steps to reproduce a bug and the device/Android version where relevant.
 
 Before contributing question content, verify it against an authoritative source and ensure you have the right to redistribute the material.
 
