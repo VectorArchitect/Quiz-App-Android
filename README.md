@@ -49,6 +49,33 @@ Counts reflect the data currently committed and may change as the banks are revi
 
 This means you can add another question-bank JSON array at the assets root without changing the Java loader. Keep non-question metadata in a separate file; records without a `question` field are ignored. The existing `questions.json` file is an empty placeholder, not the active source of the bundled questions.
 
+### Validate question-bank structure
+
+Run these commands from the repository root (Python 3.8+; no third-party packages required):
+
+```bash
+python tools/validate_question_banks.py
+python -m unittest discover -s tools -p "test_*.py" -v
+```
+
+The validator checks required question metadata, globally unique IDs, MCQ/MSQ option values and answer references, NAT answer formats, accepted ranges, and non-negative tolerances. It follows the option-value and NAT answer formats currently supported by `MainActivity.parseQuestion()`.
+
+The current committed banks contain **9 structural issues** that need manual review before the bank can be considered clean:
+
+| Question ID | Finding |
+|---|---|
+| `cse-2022-cs-q05` | Answer value does not match the option values in the record |
+| `cse-2023-cs-q02` | MCQ has no answer |
+| `cse-2023-cs-q27` | MSQ answer list contains duplicate values |
+| `cse-2023-cs-q30` | NAT answer key contains two alternative ranges, a format the app does not parse |
+| `GATE_DA_2024_1_55` | MSQ has answer values but no option records |
+| `GATE_DA_2024_1_59` | NAT answer key text `MTA` is not a numeric value or supported range |
+| `GATE_DA_2026_8_12` | Fourth option has empty display text |
+| `GATE_DA_2026_8_38` | Fourth option has empty display text |
+
+The validator exits with status 1 while these issues remain. Check the original question paper and official answer key before changing any question or answer; the script detects structural inconsistencies, **not academic correctness**. It does not verify that referenced image files exist.
+
+
 ### Supported question fields
 
 Common fields include:
