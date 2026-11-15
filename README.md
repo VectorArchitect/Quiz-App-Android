@@ -60,13 +60,12 @@ python -m unittest discover -s tools -p "test_*.py" -v
 
 The validator checks required question metadata, globally unique IDs, MCQ/MSQ option values and answer references, NAT answer formats, accepted ranges, and non-negative tolerances. It follows the option-value and NAT answer formats currently supported by `MainActivity.parseQuestion()`.
 
-The current committed banks contain **9 structural issues** that need manual review before the bank can be considered clean:
+The current committed banks contain **8 structural issues** that need manual review before the bank can be considered clean:
 
 | Question ID | Finding |
 |---|---|
 | `cse-2022-cs-q05` | Answer value does not match the option values in the record |
 | `cse-2023-cs-q02` | MCQ has no answer |
-| `cse-2023-cs-q27` | MSQ answer list contains duplicate values |
 | `cse-2023-cs-q30` | NAT answer key contains two alternative ranges, a format the app does not parse |
 | `GATE_DA_2024_1_55` | MSQ has answer values but no option records |
 | `GATE_DA_2024_1_59` | NAT answer key text `MTA` is not a numeric value or supported range |
