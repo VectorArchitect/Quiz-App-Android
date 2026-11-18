@@ -712,31 +712,16 @@ public class MainActivity extends Activity {
     }
 
     private boolean isCorrect(Question q, List<String> values) {
-        if ("NAT".equalsIgnoreCase(q.type)) {
-            if (values == null || values.isEmpty()) return false;
-            try {
-                double entered = Double.parseDouble(values.get(0).trim());
-                if (Double.isNaN(entered) || Double.isInfinite(entered)) return false;
-
-                if (!Double.isNaN(q.minAccepted) && !Double.isNaN(q.maxAccepted)) {
-                    double min = Math.min(q.minAccepted, q.maxAccepted);
-                    double max = Math.max(q.minAccepted, q.maxAccepted);
-                    return entered >= min - q.tolerance && entered <= max + q.tolerance;
-                }
-                if (!Double.isNaN(q.numericAnswer)) {
-                    return Math.abs(entered - q.numericAnswer) <= q.tolerance;
-                }
-                return false;
-            } catch (NumberFormatException e) {
-                return false;
-            }
-        }
-        if (values == null || q.answers == null) return false;
-        if (values.size() != q.answers.length) return false;
-        for (String a : q.answers) if (!values.contains(a)) return false;
-        return true;
+        return AnswerEvaluator.isCorrect(
+                q.type,
+                values,
+                q.answers,
+                q.numericAnswer,
+                q.minAccepted,
+                q.maxAccepted,
+                q.tolerance
+        );
     }
-
     private void showResults() {
         initScreen("Your Results");
         status.setText("SESSION COMPLETE • " + selectedBranch + " • OFFLINE");

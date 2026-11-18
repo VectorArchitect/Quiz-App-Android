@@ -31,6 +31,20 @@ An offline-first native Android application built with Java and Android Studio f
 
 If Android Studio asks for a JDK, use JDK 17, subject to the Gradle and Android Gradle Plugin versions configured in the project.
 
+## Run Android unit tests
+
+The MCQ, MSQ and NAT scoring rules are isolated in the pure-Java
+`AnswerEvaluator` class and covered by local JVM unit tests. Run them from
+the repository root:
+
+```bash
+./gradlew :app:testDebugUnitTest
+```
+
+On Windows, use `gradlew.bat :app:testDebugUnitTest`. The GitHub Actions
+workflow runs this task alongside the debug APK build and question-bank
+validator tests.
+
 ## Offline question banks
 
 Question banks are stored in `app/src/main/assets/`. The current files are:
