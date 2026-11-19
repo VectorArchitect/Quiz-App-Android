@@ -34,8 +34,10 @@ If Android Studio asks for a JDK, use JDK 17, subject to the Gradle and Android 
 ## Run Android unit tests
 
 The MCQ, MSQ and NAT scoring rules are isolated in the pure-Java
-`AnswerEvaluator` class and covered by local JVM unit tests. Run them from
-the repository root:
+`AnswerEvaluator` class. NAT answer-key parsing is handled by
+`AnswerKeyRangeParser`. Both are covered by local JVM unit tests, including
+range normalization and fallback when an `acceptedRange` is incomplete. Run
+the tests from the repository root:
 
 ```bash
 ./gradlew :app:testDebugUnitTest

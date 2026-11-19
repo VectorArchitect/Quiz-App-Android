@@ -152,26 +152,11 @@ public class MainActivity extends Activity {
                 q.maxAccepted = range.optDouble("max", Double.NaN);
             }
 
-            if (Double.isNaN(q.minAccepted) && Double.isNaN(q.maxAccepted)) {
-                Object answerKey = o.opt("answerKeyRange");
-                if (answerKey instanceof Number) {
-                    q.numericAnswer = ((Number) answerKey).doubleValue();
-                } else if (answerKey instanceof String) {
-                    String answerText = ((String) answerKey).trim()
-                            .replace("−", "-").replace("–", "-").replace("—", "-");
-                    java.util.regex.Matcher matcher = java.util.regex.Pattern
-                            .compile("^\\s*(-?\\d+(?:\\.\\d+)?)\\s*(?:to|-)\\s*(-?\\d+(?:\\.\\d+)?)\\s*$",
-                                    java.util.regex.Pattern.CASE_INSENSITIVE)
-                            .matcher(answerText);
-                    if (matcher.matches()) {
-                        q.minAccepted = Double.parseDouble(matcher.group(1));
-                        q.maxAccepted = Double.parseDouble(matcher.group(2));
-                    } else {
-                        try { q.numericAnswer = Double.parseDouble(answerText); }
-                        catch (NumberFormatException ignored) { }
-                    }
-                }
-            }
+            AnswerKeyRangeParser.ParsedAnswer parsedAnswer = AnswerKeyRangeParser.parse(
+                    q.numericAnswer, q.minAccepted, q.maxAccepted, o.opt("answerKeyRange"));
+            q.numericAnswer = parsedAnswer.numericAnswer;
+            q.minAccepted = parsedAnswer.minAccepted;
+            q.maxAccepted = parsedAnswer.maxAccepted;
             return q;
         } catch (Exception e) {
             return null;
