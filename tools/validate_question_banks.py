@@ -153,7 +153,7 @@ def validate_question(question, location):
                     issue("invalid-accepted-range", "acceptedRange needs finite numeric min and max values")
                 else:
                     answer_range = (low, high)
-        if answer_range is None and accepted is None:
+        if answer_range is None:
             answer_range = _parse_answer_key_range(question.get("answerKeyRange"))
 
         numeric_answer = _parse_numeric_answer(question.get("numericAnswer"))
