@@ -113,5 +113,50 @@ class ValidateQuestionTests(unittest.TestCase):
         self.assertTrue(any(code == "bank-not-array" for _, code, _ in errors))
 
 
+    def test_nat_partial_accepted_range_uses_legacy_fallback(self):
+        question = {
+            "id": "da-nat-6", "branch": "DA", "type": "NAT",
+            "question": "Enter a number.",
+            "acceptedRange": {"min": 1.0},
+            "answerKeyRange": "2 to 3",
+        }
+        codes = {code for code, _ in validate_question(question, "sample")}
+        self.assertIn("invalid-accepted-range", codes)
+        self.assertNotIn("missing-nat-answer", codes)
+
+    def test_nat_partial_accepted_range_keeps_numeric_answer_usable(self):
+        question = {
+            "id": "da-nat-7", "branch": "DA", "type": "NAT",
+            "question": "Enter a number.",
+            "acceptedRange": {"min": 1.0},
+            "numericAnswer": 2.5,
+        }
+        codes = {code for code, _ in validate_question(question, "sample")}
+        self.assertIn("invalid-accepted-range", codes)
+        self.assertNotIn("missing-nat-answer", codes)
+
+    def test_nat_non_object_accepted_range_does_not_hide_fallback(self):
+        question = {
+            "id": "da-nat-8", "branch": "DA", "type": "NAT",
+            "question": "Enter a number.",
+            "acceptedRange": "invalid",
+            "answerKeyRange": "4",
+        }
+        codes = {code for code, _ in validate_question(question, "sample")}
+        self.assertIn("invalid-accepted-range", codes)
+        self.assertNotIn("missing-nat-answer", codes)
+
+    def test_nat_partial_accepted_range_without_fallback_is_missing(self):
+        question = {
+            "id": "da-nat-9", "branch": "DA", "type": "NAT",
+            "question": "Enter a number.",
+            "acceptedRange": {"min": 1.0},
+            "answerKeyRange": "MTA",
+        }
+        codes = {code for code, _ in validate_question(question, "sample")}
+        self.assertIn("invalid-accepted-range", codes)
+        self.assertIn("missing-nat-answer", codes)
+
+
 if __name__ == "__main__":
     unittest.main()
